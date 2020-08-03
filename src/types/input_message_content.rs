@@ -134,8 +134,7 @@ mod tests {
 
     #[test]
     fn contact_serialize() {
-        let expected_json =
-            r#"{"phone_number":"+3800000000","first_name":"jhon"}"#;
+        let expected_json = r#"{"phone_number":"+3800000000","first_name":"jhon"}"#;
         let contact_content = InputMessageContent::Contact {
             phone_number: String::from("+3800000000"),
             first_name: String::from("jhon"),

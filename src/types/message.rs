@@ -3,9 +3,9 @@
 use serde::{Deserialize, Serialize};
 
 use crate::types::{
-    Animation, Audio, Chat, Contact, Document, Game, InlineKeyboardMarkup,
-    Invoice, Location, MessageEntity, PassportData, PhotoSize, Poll, Sticker,
-    SuccessfulPayment, True, User, Venue, Video, VideoNote, Voice,
+    Animation, Audio, Chat, Contact, Document, Game, InlineKeyboardMarkup, Invoice, Location,
+    MessageEntity, PassportData, PhotoSize, Poll, Sticker, SuccessfulPayment, True, User, Venue,
+    Video, VideoNote, Voice,
 };
 
 /// This object represents a message.
@@ -329,18 +329,16 @@ mod getters {
         message::{
             ForwardKind::{ChannelForward, NonChannelForward, Origin},
             MediaKind::{
-                Animation, Audio, Contact, Document, Game, Location, Photo,
-                Poll, Sticker, Text, Venue, Video, VideoNote, Voice,
+                Animation, Audio, Contact, Document, Game, Location, Photo, Poll, Sticker, Text,
+                Venue, Video, VideoNote, Voice,
             },
             MessageKind::{
-                ChannelChatCreated, Common, ConnectedWebsite, DeleteChatPhoto,
-                GroupChatCreated, Invoice, LeftChatMember, Migrate,
-                NewChatMembers, NewChatPhoto, NewChatTitle, PassportData,
-                Pinned, SuccessfulPayment, SupergroupChatCreated,
+                ChannelChatCreated, Common, ConnectedWebsite, DeleteChatPhoto, GroupChatCreated,
+                Invoice, LeftChatMember, Migrate, NewChatMembers, NewChatPhoto, NewChatTitle,
+                PassportData, Pinned, SuccessfulPayment, SupergroupChatCreated,
             },
         },
-        Chat, ForwardedFrom, Message, MessageEntity, PhotoSize, Sender, True,
-        User,
+        Chat, ForwardedFrom, Message, MessageEntity, PhotoSize, Sender, True, User,
     };
 
     /// Getters for [Message] fields from [telegram docs].
@@ -612,9 +610,7 @@ mod getters {
                     | Document { caption, .. }
                     | Photo { caption, .. }
                     | Video { caption, .. }
-                    | Voice { caption, .. } => {
-                        caption.as_ref().map(Deref::deref)
-                    }
+                    | Voice { caption, .. } => caption.as_ref().map(Deref::deref),
                     _ => None,
                 },
                 _ => None,
@@ -693,18 +689,14 @@ mod getters {
         //       mb smt like `is_delete_chat_photo(&self) -> bool`?
         pub fn delete_chat_photo(&self) -> Option<True> {
             match &self.kind {
-                DeleteChatPhoto { delete_chat_photo } => {
-                    Some(*delete_chat_photo)
-                }
+                DeleteChatPhoto { delete_chat_photo } => Some(*delete_chat_photo),
                 _ => None,
             }
         }
 
         pub fn group_chat_created(&self) -> Option<True> {
             match &self.kind {
-                GroupChatCreated { group_chat_created } => {
-                    Some(*group_chat_created)
-                }
+                GroupChatCreated { group_chat_created } => Some(*group_chat_created),
                 _ => None,
             }
         }
@@ -762,18 +754,14 @@ mod getters {
 
         pub fn successful_payment(&self) -> Option<&types::SuccessfulPayment> {
             match &self.kind {
-                SuccessfulPayment { successful_payment } => {
-                    Some(successful_payment)
-                }
+                SuccessfulPayment { successful_payment } => Some(successful_payment),
                 _ => None,
             }
         }
 
         pub fn connected_website(&self) -> Option<&str> {
             match &self.kind {
-                ConnectedWebsite { connected_website } => {
-                    Some(connected_website)
-                }
+                ConnectedWebsite { connected_website } => Some(connected_website),
                 _ => None,
             }
         }

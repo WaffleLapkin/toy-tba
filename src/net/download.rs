@@ -1,14 +1,15 @@
+use bytes::Bytes;
 use reqwest::Client;
-use tokio::io::{AsyncWrite, AsyncWriteExt};
-
-#[cfg(feature = "unstable-stream")]
-use ::{bytes::Bytes, tokio::stream::Stream};
+use tokio::{
+    io::{AsyncWrite, AsyncWriteExt},
+    stream::Stream,
+};
 
 use crate::DownloadError;
 
 use super::TELEGRAM_API_URL;
 
-pub async fn download_file<D>(
+pub(crate) async fn download_file<D>(
     client: &Client,
     token: &str,
     path: &str,
@@ -30,8 +31,7 @@ where
     Ok(())
 }
 
-#[cfg(feature = "unstable-stream")]
-pub async fn download_file_stream(
+pub(crate) async fn download_file_stream(
     client: &Client,
     token: &str,
     path: &str,

@@ -1,7 +1,11 @@
-use crate::bot::{Bot, Requester};
-use crate::requests::{GetMe, SendMessage, HasPayload, Request, Payload};
-use crate::types::ChatId;
 use std::future::Future;
+
+use crate::{
+    methods::SendMessage,
+    requester::Requester,
+    requests::{HasPayload, Payload, Request},
+    types::{ChatId, InputFile},
+};
 
 pub struct RateLimits<B> {
     inner: B,
@@ -14,7 +18,7 @@ impl<B> RateLimits<B> {
 }
 
 pub struct RateLimitRequest<R> {
-    inner: R
+    inner: R,
 }
 
 impl<R: HasPayload> HasPayload for RateLimitRequest<R> {
@@ -27,10 +31,8 @@ impl<R: HasPayload> HasPayload for RateLimitRequest<R> {
 
 impl<R: Request<Payload = SendMessage>> Request for RateLimitRequest<R> {
     type Err = R::Err;
-    type Future = impl Future<Output = Result<
-        <<R as HasPayload>::Payload as Payload>::Output,
-        Self::Err,
-    >>;
+    type Future =
+        impl Future<Output = Result<<<R as HasPayload>::Payload as Payload>::Output, Self::Err>>;
 
     fn send(self) -> Self::Future {
         async {
@@ -52,8 +54,30 @@ impl<B: Requester> Requester for RateLimits<B> {
     fn send_message<C, T>(&self, chat_id: C, text: T) -> Self::SendMessage
     where
         C: Into<ChatId>,
-        T: Into<String>
+        T: Into<String>,
     {
-        RateLimitRequest { inner: self.inner.send_message(chat_id, text) }
+        RateLimitRequest {
+            inner: self.inner.send_message(chat_id, text),
+        }
+    }
+
+    type SendPhoto = B::SendPhoto;
+
+    fn send_photo<C, T>(&self, chat_id: C, photo: T) -> Self::SendPhoto
+    where
+        C: Into<ChatId>,
+        T: Into<InputFile>,
+    {
+        self.inner.send_photo(chat_id, photo)
+    }
+
+    type SendDocument = B::SendDocument;
+
+    fn send_document<C, T>(&self, chat_id: C, document: T) -> Self::SendDocument
+    where
+        C: Into<ChatId>,
+        T: Into<InputFile>,
+    {
+        self.inner.send_document(chat_id, document)
     }
 }

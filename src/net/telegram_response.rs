@@ -2,9 +2,8 @@ use reqwest::StatusCode;
 use serde::Deserialize;
 
 use crate::{
-    requests::ResponseResult,
     types::{False, ResponseParameters, True},
-    RequestError,
+    RequestError, ResponseResult,
 };
 
 #[derive(Deserialize)]
@@ -40,9 +39,7 @@ impl<R> Into<ResponseResult<R>> for TelegramResponse<R> {
             } => {
                 if let Some(params) = response_parameters {
                     match params {
-                        ResponseParameters::RetryAfter(i) => {
-                            Err(RequestError::RetryAfter(i))
-                        }
+                        ResponseParameters::RetryAfter(i) => Err(RequestError::RetryAfter(i)),
                         ResponseParameters::MigrateToChatId(to) => {
                             Err(RequestError::MigrateToChatId(to))
                         }

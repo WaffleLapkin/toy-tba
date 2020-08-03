@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
-use crate::requests::{Payload, HasPayload};
-use crate::types::{ChatId, ParseMode, ReplyMarkup, Message};
+use crate::requests::{HasPayload, Payload};
+use crate::types::{ChatId, Message, ParseMode, ReplyMarkup};
 
 /// Use this method to send text messages.
 ///
@@ -107,7 +107,4 @@ pub trait SendMessageSetters: HasPayload<Payload = SendMessage> + Sized {
     }
 }
 
-impl<P> SendMessageSetters for P
-where
-    P: HasPayload<Payload = SendMessage>,
-{}
+impl<P> SendMessageSetters for P where P: HasPayload<Payload = SendMessage> {}

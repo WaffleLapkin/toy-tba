@@ -10,15 +10,16 @@ edition = "2018"
 reqwest = { version = "0.10.7", features = ["json", "stream"] }
 tokio = { version = "0.2.22", features = ["full"] }
 bytes = "0.5.6"
+futures = "0.3.5" # used in 1 place? ugh
 
 serde = { version = "1.0.114", features = ["derive"] }
 serde_json = "1.0.57"
 serde_with_macros = "1.0.1"
 
-mashup = "0.1.12"
-
 derive_more = "0.15.0"
 thiserror = "1.0.2"
+
+serde-multipart = { git = "https://github.com/WaffleLapkin/serde-multipart.git", rev = "6fa17002" }
 
 [features]
 # features those require nightly compiler

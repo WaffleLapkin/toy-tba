@@ -1,13 +1,17 @@
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
 use std::path::PathBuf;
 
 /// This object represents the contents of a file to be uploaded.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputfile).
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, serde::Serialize)]
 pub enum InputFile {
     File(PathBuf),
+    Memory {
+        file_name: String,
+        data: std::borrow::Cow<'static, [u8]>,
+    },
     Url(String),
     FileId(String),
 }
@@ -58,29 +62,6 @@ impl From<InputFile> for Option<PathBuf> {
         match file {
             InputFile::File(path) => Some(path),
             _ => None,
-        }
-    }
-}
-
-impl Serialize for InputFile {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        match self {
-            InputFile::File(path) => {
-                // NOTE: file should be actually attached with
-                // multipart/form-data
-                serializer.serialize_str(
-                    // TODO: remove unwrap (?)
-                    &format!(
-                        "attach://{}",
-                        path.file_name().unwrap().to_string_lossy()
-                    ),
-                )
-            }
-            InputFile::Url(url) => serializer.serialize_str(url),
-            InputFile::FileId(id) => serializer.serialize_str(id),
         }
     }
 }

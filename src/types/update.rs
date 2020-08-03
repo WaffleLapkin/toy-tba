@@ -63,8 +63,8 @@ pub enum UpdateKind {
 #[cfg(test)]
 mod test {
     use crate::types::{
-        Chat, ChatKind, ForwardKind, MediaKind, Message, MessageKind, Sender,
-        Update, UpdateKind, User,
+        Chat, ChatKind, ForwardKind, MediaKind, Message, MessageKind, Sender, Update, UpdateKind,
+        User,
     };
 
     // TODO: more tests for deserialization

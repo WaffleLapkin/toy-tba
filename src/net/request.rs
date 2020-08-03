@@ -1,19 +1,26 @@
-use reqwest::{multipart::Form, Client, Response};
+use reqwest::{Client, Response};
 use serde::{de::DeserializeOwned, Serialize};
 
-use crate::{requests::ResponseResult, RequestError};
+use crate::{RequestError, ResponseResult};
 
 use super::{TelegramResponse, TELEGRAM_API_URL};
 
-pub async fn request_multipart<T>(
+pub(crate) async fn request_multipart<T, P>(
     client: &Client,
     token: &str,
     method_name: &str,
-    params: Form,
+    payload: P,
 ) -> ResponseResult<T>
 where
     T: DeserializeOwned,
+    P: Serialize,
 {
+    let params = serde_multipart::to_form(&payload)
+        .await
+        .expect("serialization of request to be infallible"); // this should be ok since we don't
+                                                              // write request those may trigger
+                                                              // error here
+
     let response = client
         .post(&super::method_url(TELEGRAM_API_URL, token, method_name))
         .multipart(params)
@@ -24,7 +31,7 @@ where
     process_response(response).await
 }
 
-pub async fn request_json<T, P>(
+pub(crate) async fn request_json<T, P>(
     client: &Client,
     token: &str,
     method_name: &str,
@@ -37,25 +44,6 @@ where
     let response = client
         .post(&super::method_url(TELEGRAM_API_URL, token, method_name))
         .json(&params)
-        .send()
-        .await
-        .map_err(RequestError::NetworkError)?;
-
-    process_response(response).await
-}
-
-pub async fn request_body<T>(
-    client: &Client,
-    token: &str,
-    method_name: &str,
-    params: String,
-) -> ResponseResult<T>
-where
-    T: DeserializeOwned,
-{
-    let response = client
-        .post(&super::method_url(TELEGRAM_API_URL, token, method_name))
-        .body(params)
         .send()
         .await
         .map_err(RequestError::NetworkError)?;

@@ -2,6 +2,9 @@ use derive_more::From;
 use reqwest::StatusCode;
 use thiserror::Error;
 
+/// A type that is returned when making requests to telegram
+pub type ResponseResult<T> = Result<T, crate::RequestError>;
+
 #[derive(Debug, Error, From)]
 pub enum DownloadError {
     #[error("A network error: {0}")]
@@ -14,7 +17,8 @@ pub enum DownloadError {
 #[derive(Debug, Error)]
 pub enum RequestError {
     #[error("A Telegram's error #{status_code}: {description}")]
-    ApiError { // TODO: ideally an enum
+    ApiError {
+        // TODO: ideally an enum
         status_code: StatusCode,
         description: String,
     },

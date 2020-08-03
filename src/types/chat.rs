@@ -135,10 +135,7 @@ impl<'de> serde::de::Visitor<'de> for PrivateChatKindVisitor {
         write!(f, r#"field equal to "private""#)
     }
 
-    fn visit_borrowed_str<E: serde::de::Error>(
-        self,
-        v: &'de str,
-    ) -> Result<Self::Value, E> {
+    fn visit_borrowed_str<E: serde::de::Error>(self, v: &'de str) -> Result<Self::Value, E> {
         match v {
             "private" => Ok(()),
             _ => Err(E::invalid_value(
@@ -177,9 +174,7 @@ mod tests {
             },
             photo: None,
         };
-        let actual =
-            from_str(r#"{"id":-1,"type":"channel","username":"channelname"}"#)
-                .unwrap();
+        let actual = from_str(r#"{"id":-1,"type":"channel","username":"channelname"}"#).unwrap();
         assert_eq!(expected, actual);
     }
 
@@ -196,9 +191,9 @@ mod tests {
                 },
                 photo: None,
             },
-            from_str(
-                r#"{"id":0,"type":"private","username":"username","first_name":"Anon"}"#
-            ).unwrap());
+            from_str(r#"{"id":0,"type":"private","username":"username","first_name":"Anon"}"#)
+                .unwrap()
+        );
     }
 
     #[test]
