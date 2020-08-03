@@ -9,4 +9,4 @@ command = 'curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nigh
 
 [[redirects]]
   from = "/*"
-  to = "/toy-tba"
+  to = "/toy_tba"
