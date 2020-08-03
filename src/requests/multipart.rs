@@ -65,3 +65,17 @@ where
         self.bot.execute_multipart(self.payload)
     }
 }
+
+impl<P: Payload + Serialize> core::ops::Deref for RequestMultipart<P> {
+    type Target = P;
+
+    fn deref(&self) -> &Self::Target {
+        &self.payload
+    }
+}
+
+impl<P: Payload + Serialize> core::ops::DerefMut for RequestMultipart<P> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.payload
+    }
+}

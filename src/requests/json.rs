@@ -49,3 +49,17 @@ where
         self.bot.execute_json(self.payload)
     }
 }
+
+impl<P: Payload + Serialize> core::ops::Deref for RequestJson<P> {
+    type Target = P;
+
+    fn deref(&self) -> &Self::Target {
+        &self.payload
+    }
+}
+
+impl<P: Payload + Serialize> core::ops::DerefMut for RequestJson<P> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.payload
+    }
+}

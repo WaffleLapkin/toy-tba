@@ -42,6 +42,20 @@ impl<R: Request<Payload = SendMessage>> Request for RateLimitRequest<R> {
     }
 }
 
+impl<R: Request<Payload = SendMessage> + Deref<Target = SendMessage>> Deref for RateLimitRequest<R> {
+    type Target = SendMessage;
+
+    fn deref(&self) -> &Self::Target {
+        &self.inner
+    }
+}
+
+impl<R: Request<Payload = SendMessage> + DerefMut<Target = SendMessage>> DerefMut for RateLimitRequest<R> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.inner
+    }
+}
+
 impl<B: Requester> Requester for RateLimits<B> {
     type GetMe = B::GetMe;
 
