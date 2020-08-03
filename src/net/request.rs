@@ -1,25 +1,28 @@
-use reqwest::{Client, Response};
-use serde::{de::DeserializeOwned, Serialize};
+use std::future::Future;
 
-use crate::{RequestError, ResponseResult};
+use reqwest::{
+    header::{HeaderValue, CONTENT_TYPE},
+    multipart::Form,
+    Client, Response,
+};
+use serde::de::DeserializeOwned;
 
 use super::{TelegramResponse, TELEGRAM_API_URL};
+use crate::{RequestError, ResponseResult};
 
-pub(crate) async fn request_multipart<T, P>(
+pub(crate) async fn request_multipart<T>(
     client: &Client,
     token: &str,
     method_name: &str,
-    payload: P,
+    params: impl Future<Output = Result<Form, serde_multipart::Error>>,
 ) -> ResponseResult<T>
 where
     T: DeserializeOwned,
-    P: Serialize,
 {
-    let params = serde_multipart::to_form(&payload)
+    let params = params
         .await
-        .expect("serialization of request to be infallible"); // this should be ok since we don't
-                                                              // write request those may trigger
-                                                              // error here
+        // this `expect` should be ok since we don't write request those may trigger error here
+        .expect("serialization of request to be infallible");
 
     let response = client
         .post(&super::method_url(TELEGRAM_API_URL, token, method_name))
@@ -31,19 +34,19 @@ where
     process_response(response).await
 }
 
-pub(crate) async fn request_json<T, P>(
+pub(crate) async fn request_json<T>(
     client: &Client,
     token: &str,
     method_name: &str,
-    params: P,
+    params: Vec<u8>,
 ) -> ResponseResult<T>
 where
     T: DeserializeOwned,
-    P: Serialize,
 {
     let response = client
         .post(&super::method_url(TELEGRAM_API_URL, token, method_name))
-        .json(&params)
+        .header(CONTENT_TYPE, HeaderValue::from_static("application/json"))
+        .body(params)
         .send()
         .await
         .map_err(RequestError::NetworkError)?;

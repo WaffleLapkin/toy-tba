@@ -10,9 +10,6 @@
 #![forbid(unsafe_code)]
 //#![deny(missing_docs)]
 
-// TODO: add a way to send multiple common requests without clonning
-//       (we serialize the data anyway, soo...)
-
 #[macro_use]
 mod local_macros;
 mod error;

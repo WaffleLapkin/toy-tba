@@ -43,10 +43,15 @@ where
     P::Output: DeserializeOwned,
 {
     type Err = RequestError;
-    type Future = impl Future<Output = ResponseResult<P::Output>>;
+    type Send = impl Future<Output = ResponseResult<P::Output>>;
+    type SendRef = impl Future<Output = ResponseResult<P::Output>>;
 
-    fn send(self) -> Self::Future {
-        self.bot.execute_json(self.payload)
+    fn send(self) -> Self::Send {
+        self.bot.execute_json(&self.payload)
+    }
+
+    fn send_ref(&self) -> Self::SendRef {
+        self.bot.execute_json(&self.payload)
     }
 }
 

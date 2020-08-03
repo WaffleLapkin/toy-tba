@@ -6,7 +6,7 @@ use serde::{de::DeserializeOwned, Serialize};
 use crate::net::{download_file, download_file_stream};
 use crate::{
     methods::{GetMe, SendDocument, SendMessage, SendPhoto},
-    net::{request_json, request_multipart},
+    net,
     requester::Requester,
     requests::{Payload, RequestJson, RequestMultipart},
     types::{ChatId, InputFile},
@@ -163,9 +163,12 @@ impl Bot {
     //  pros:
     //    - ???
 
+    // TODO: it may be better in case of `.send` (not `_ref`) to serialize the data in the future,
+    //       not before it
+
     pub(crate) fn execute_json<P>(
         &self,
-        payload: P,
+        payload: &P,
     ) -> impl Future<Output = ResponseResult<P::Output>>
     where
         P: Payload + Serialize,
@@ -174,13 +177,17 @@ impl Bot {
         let client = self.client.clone();
         let token = Arc::clone(&self.token);
 
+        let params = serde_json::to_vec(payload)
+            // this `expect` should be ok since we don't write request those may trigger error here
+            .expect("serialization of request to be infallible");
+
         // async move to capture client&token
-        async move { request_json(&client, token.as_ref(), P::NAME, payload).await }
+        async move { net::request_json(&client, token.as_ref(), P::NAME, params).await }
     }
 
     pub(crate) fn execute_multipart<P>(
         &self,
-        payload: P,
+        payload: &P,
     ) -> impl Future<Output = ResponseResult<P::Output>>
     where
         P: Payload + Serialize,
@@ -189,7 +196,9 @@ impl Bot {
         let client = self.client.clone();
         let token = Arc::clone(&self.token);
 
+        let params = serde_multipart::to_form(payload);
+
         // async move to capture client&token
-        async move { request_multipart(&client, token.as_ref(), P::NAME, payload).await }
+        async move { net::request_multipart(&client, token.as_ref(), P::NAME, params).await }
     }
 }
